@@ -1,0 +1,20 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  username: priya
+  pool: 5
+
+development:
+  <<: *default
+  database: visitor_tracker_development
+
+test:
+  <<: *default
+  database: visitor_tracker_test
+
+production:
+  <<: *default
+  database: visitor_tracker_production
+  password: <%= ENV['PROD_PASSWORD'] %>
+
+

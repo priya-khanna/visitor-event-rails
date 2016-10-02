@@ -1,0 +1,41 @@
+.home_container {
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+.home_label {
+  margin-right: 25px;
+}
+
+.home_input {
+  width: 50px;
+  margin-left: 25px;
+}
+
+.home_right {
+  margin-left: 360px;
+}
+
+.home_select_box {
+  size: 20;
+  margin-left: 1000px;
+}
+
+.track_h3 {
+  margin-left: 300px;
+}
+
+.home_button {
+  background: #4d94ff;
+  width: 100px;
+}
+
+.white_panel {
+  background: white;
+  padding-left: 10px;
+  padding-top: 10px;
+  width: 1200px;
+  border-radius: 5px;
+}
+
+

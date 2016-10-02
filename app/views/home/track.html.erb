@@ -1,0 +1,2 @@
+<h3 class="track_h3"><i><%= "#{@count} visitors present in Museum at #{@at_time}" %></i></h3>
+<%= line_chart(@chart_data, xtitle: "Last 10 days", ytitle: "Number of Users", width: "1000px", height: "250px", discrete: true, id: "chart1") %>
