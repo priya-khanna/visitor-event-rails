@@ -37,16 +37,15 @@ class HomeController < ApplicationController
   end
 
   def chart_data
-    intervals = []
+    intervals = []; result = [];
     intervals << from_time
     while intervals.last <= to_time
       intervals << intervals.last + range
     end
-    result = []
     intervals.each do |item|
-      # count = VisitorEvent.where('happened_at >= ? AND happened_at < ?', item.beginning_of_day, item + range).sum(:effect)
-      count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item + range).order(:happened_at).last.visitor_count
-      result << [item.strftime("%d %b, %I:%M %P"), count > 0 ? count : 0]
+      # count = VisitorEvent.where('happened_at >= ? AND happened_at < ?', item.beginning_of_day, item).sum(:effect)
+      count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).order(:happened_at).last.try(:visitor_count)
+      result << [item.strftime("%d %b, %I:%M %P"), count && count > 0 ? count : 0]
     end
     result
   end
