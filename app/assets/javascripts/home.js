@@ -33,7 +33,6 @@ $(document).ready(function() {
 
 
   function onDateChange(reload_chart) {
-    $('#count_res').val("hi")
     var url = window.location.protocol + "//" + window.location.host + '/home/track'
     var atTime = $('#datetimepicker').val();
     var fromTime = $('#datetimepicker1').val();
@@ -48,13 +47,8 @@ $(document).ready(function() {
       data: { event: payload },
       dataType: 'html',
       success: function (data) {
-        // console.log("visitor events data ----------", data);
-        //  $('#visitor_count').val(data.count);
-        //  $('#chart1').remove();
-         console.log("In success", data);
-         $('#charts').html(data);
-         // $('charts').append('<%= line_chart(data.chart2_data, xtitle: "Last 10 days", ytitle: "Number of Users", width: "700px", height: "250px", discrete: true, id: 'chart1') %>');
-
+        console.log("In success");
+        $('#charts').html(data);
       },
       error: function(data, status, error) {
         console.log("In error 1",data);

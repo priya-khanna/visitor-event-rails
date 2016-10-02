@@ -4,6 +4,7 @@ class CreateVisitorEvents < ActiveRecord::Migration
       t.integer :ticket_id
       t.string :event_type
       t.datetime :happened_at
+      t.integer :effect
       t.integer :visitor_count
 
       t.timestamps null: false

@@ -6,12 +6,8 @@ class HomeController < ApplicationController
     @count = visitor_count > 0 ? visitor_count : 0
     @chart_data = reload_chart ? chart_data : cached_chart_data
     @at_time = at_time.strftime('%d %b, %I:%M %P')
-    @reload_chart = reload_chart
+    @x_title = "#{track_params[:range]} data trend from #{from_time.strftime('%d %b')} to #{to_time.strftime('%d %b')}"
     render :track, layout: false
-
-  end
-
-  def about
   end
 
   private
@@ -22,7 +18,7 @@ class HomeController < ApplicationController
   def reload_chart; track_params[:reload_chart] && track_params[:reload_chart] == "true" ? true : false;  end
 
   def track_params
-    params.require(:event).permit(:at_time, :from_time, :to_time, :reload_chart, :range)
+    @_track_params ||= params.require(:event).permit(:at_time, :from_time, :to_time, :reload_chart, :range)
   end
 
   def range
@@ -31,7 +27,7 @@ class HomeController < ApplicationController
     return 1.hour if track_params[:range] == 'Hourly'
     return 1.day if track_params[:range] == 'Daily'
     return 1.week if track_params[:range] == 'Weekly'
-    15.minutes
+    1.hour
   end
 
   def cached_chart_data
@@ -42,39 +38,25 @@ class HomeController < ApplicationController
 
   def chart_data
     intervals = []
-    if range < 1.day
-      intervals << from_time
-      while intervals.last <= to_time
-        intervals << intervals.last + range
-      end
-    elsif range == 1.day
-     intervals = (from_time..to_time).to_a
+    intervals << from_time
+    while intervals.last <= to_time
+      intervals << intervals.last + range
     end
     result = []
     intervals.each do |item|
-      count = VisitorEvent.where('happened_at >= ? AND happened_at < ?', item.beginning_of_day, item + range).sum(:visitor_count)
+      # count = VisitorEvent.where('happened_at >= ? AND happened_at < ?', item.beginning_of_day, item + range).sum(:effect)
+      count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item + range).order(:happened_at).last.visitor_count
       result << [item.strftime("%d %b, %I:%M %P"), count > 0 ? count : 0]
     end
     result
   end
 
   def visitor_count
-    VisitorEvent.where('happened_at > ? AND happened_at <= ?', at_time.beginning_of_day, at_time).sum(:visitor_count)
-  end
-
-  def set_visitor_count
-    VisitorEvent.all.each do |item|
-      at = item.happened_at
-      entry_visitors = VisitorEvent.where(event_type: 'entry').where('happened_at > ? AND happened_at <= ?', at.beginning_of_day, at).count
-      exit_visitors = VisitorEvent.where(event_type: 'exit').where('happened_at > ? AND happened_at <= ?', at.beginning_of_day, at).count
-      visitor_count = entry_visitors - exit_visitors
-      visitor_count = visitor_count > 0 ? visitor_count : 0
-      item.update_attributes(visitor_count: visitor_count)
-    end
+    VisitorEvent.where('happened_at > ? AND happened_at <= ?', at_time.beginning_of_day, at_time).sum(:effect)
   end
 
   def cache_key
-    [:chart_data, VisitorEvent.maximum(:updated_at), Time.zone.now.to_i/3600]
+    [:chart_data, range, VisitorEvent.maximum(:updated_at), Time.zone.now.to_i/3600]
   end
 
 end

@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 20160930180010) do
     t.integer  "ticket_id"
     t.string   "event_type"
     t.datetime "happened_at"
+    t.integer  "effect"
     t.integer  "visitor_count"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
