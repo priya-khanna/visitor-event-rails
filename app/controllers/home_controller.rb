@@ -43,11 +43,15 @@ class HomeController < ApplicationController
       intervals << intervals.last + range
     end
     intervals.each do |item|
-      # count = VisitorEvent.where('happened_at >= ? AND happened_at < ?', item.beginning_of_day, item).sum(:effect)
-      count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).order(:happened_at).last.try(:visitor_count)
+      count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).sum(:effect)
+      # count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).order(:happened_at).last.try(:visitor_count)
       result << [item.strftime("%d %b, %I:%M %P"), count && count > 0 ? count : 0]
     end
     result
+  end
+
+  def sql_data
+    VisitorEvent.find_by_sql("SELECT MAX(visitor_count), MAX(happened_at), floor(extract(epoch FROM happened_at)/(1 * 60)) AS timekey FROM visitor_events WHERE happened_at BETWEEN '2016-10-02 00:00:00' AND '2016-10-02 17:00:00' GROUP BY timekey;")
   end
 
   def visitor_count
