@@ -40,19 +40,20 @@ class HomeController < ApplicationController
     intervals = []; result = [];
     intervals << from_time if [15.minutes, 30.minutes, 1.hour].include?(range)
     intervals << from_time.beginning_of_day + 17.hours if [1.day, 1.week].include?(range)
-    while intervals.last <= to_time
+    while intervals.last < to_time
       intervals << intervals.last + range
     end
-    intervals.each do |item|
-      count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).sum(:effect)
-      # count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).order(:happened_at).last.try(:visitor_count)
+    intervals.each_with_index do |item, i|
+      # count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).sum(:effect)
+      if i == 0
+        count = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', item.beginning_of_day, item).order(:happened_at).last.try(:visitor_count)
+      else
+        range_counts = VisitorEvent.where('happened_at >= ? AND happened_at <= ?', intervals[i-1], intervals[i]).order(:happened_at).pluck(:visitor_count)
+        count = range_counts.compact.blank? ? 0 : (range_counts.compact.sum/range_counts.count).round
+      end
       result << [item.strftime("%d %b, %I:%M %P"), count && count > 0 ? count : 0]
     end
     result
-  end
-
-  def sql_data
-    VisitorEvent.find_by_sql("SELECT MAX(visitor_count), MAX(happened_at), floor(extract(epoch FROM happened_at)/(1 * 60)) AS timekey FROM visitor_events WHERE happened_at BETWEEN '2016-10-02 00:00:00' AND '2016-10-02 17:00:00' GROUP BY timekey;")
   end
 
   def visitor_count

@@ -30,10 +30,8 @@ $(document).ready(function() {
     onDateChange(true);
   });
 
-
-
   function onDateChange(reload_chart) {
-    var url = window.location.protocol + "//" + window.location.host + '/home/track'
+    var url = '/home/track'
     var atTime = $('#datetimepicker').val();
     var fromTime = $('#datetimepicker1').val();
     var toTime = $('#datetimepicker2').val();
@@ -51,10 +49,7 @@ $(document).ready(function() {
         $('#charts').html(data);
       },
       error: function(data, status, error) {
-        console.log("In error 1",data);
-        console.log(data);
-        console.log("In error 2",status);
-        console.log("In error 3",error);
+        console.log("In error", status, error);
       }
     });
   }

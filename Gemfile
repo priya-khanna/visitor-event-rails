@@ -8,12 +8,9 @@ gem 'sprockets', '~> 3.6'
 
 gem 'jquery-rails'
 gem 'bootstrap-sass'
-gem 'turbolinks'
 gem 'awesome_print'
 gem "chartkick"
 gem 'factory_girl_rails'
-
-gem 'foreman', '~> 0.81'
 
 group :development, :test do
   gem 'pry-rails'
