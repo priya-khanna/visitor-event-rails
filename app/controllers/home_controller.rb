@@ -12,9 +12,9 @@ class HomeController < ApplicationController
 
   private
 
-  def at_time; track_params[:at_time].blank? ? Date.today + 17.hours : Time.zone.parse(track_params[:at_time]); end
-  def from_time; track_params[:from_time].blank? ? Date.today + 9.hours : Time.zone.parse(track_params[:from_time]); end
-  def to_time; track_params[:to_time].blank? ? Date.today + 17.hours : Time.zone.parse(track_params[:to_time]); end
+  def at_time; @_at_time ||= track_params[:at_time].blank? ? Date.today + 17.hours : Time.zone.parse(track_params[:at_time]); end
+  def from_time; @_from_time ||= track_params[:from_time].blank? ? Date.today + 9.hours : Time.zone.parse(track_params[:from_time]); end
+  def to_time; @_to_time ||= track_params[:to_time].blank? ? Date.today + 17.hours : Time.zone.parse(track_params[:to_time]); end
   def reload_chart; track_params[:reload_chart] && track_params[:reload_chart] == "true" ? true : false;  end
 
   def track_params
@@ -38,7 +38,8 @@ class HomeController < ApplicationController
 
   def chart_data
     intervals = []; result = [];
-    intervals << from_time
+    intervals << from_time if [15.minutes, 30.minutes, 1.hour].include?(range)
+    intervals << from_time.beginning_of_day + 17.hours if [1.day, 1.week].include?(range)
     while intervals.last <= to_time
       intervals << intervals.last + range
     end
